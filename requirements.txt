@@ -1,0 +1,7 @@
+streamlit
+panda
+numpy 
+matplotlib
+prophet
+joblib
+requests
