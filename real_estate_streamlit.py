@@ -217,11 +217,29 @@ st.download_button(label="Download Full Forecast CSV", data=csv, file_name='fore
 # ========================= The So What Tab ====================================
 
 with tab4:
-    st.header("This Model and Psychological Operations")
+    st.header("Psychological Operations and Strategic Impacts")
 
-    st.markdown( """ PSYOP depends on understanding and pivoting our actions to create change in an envionment,
-                utilizing currently tracked data from vendors to establish trend patterns on public sentiment can be modeled against current effotrs. 
-                Understnading the impacts of our past actions can dictate our future ones to creat the effects we need.""")
-    
+    st.subheader("Overview")
+    st.markdown("""
+    Psychological Operations (PSYOP) rely on understanding, influencing, and shaping perceptions within a targeted environment.  
+    This model leverages time-series forecasting and economic indicators to help identify how **key events correlate with shifts in prices and market behavior**.
 
-    st.markdown(""" Questions ? """)
+    By integrating publicly available data streams and conflict timelines, this tool lays a foundation for exploring how **past actions drive future reactions**.
+    """)
+
+    st.subheader("Strategic Applications")
+    st.markdown("""
+    - Identify lagging and leading indicators associated with major operational outcomes  
+    - Anticipate socio-economic ripples triggered by political or military decisions  
+    - Guide future planning with retrospective data-backed evaluations  
+    - Reinforce messaging strategies based on economic momentum and sentiment shifts
+    """)
+
+    st.subheader("Next Steps")
+    st.markdown("""
+    Alignment between real-world operations and projected economic responses on a gloabl scale
+
+    Identifying existing data sources that can enhance situational awareness and forecasting throughout the AOR?
+
+    How might adversaries use similar modeling techniques, and how can we stay ahead?
+    """)
