@@ -6,6 +6,7 @@ from prophet import Prophet
 import joblib
 import requests
 from datetime import datetime
+import matplotlib.dates as mdates  
 
 # Load Model and Data
 # Load Model and Data
@@ -134,46 +135,72 @@ st.pyplot(fig)
 with tab2:
     st.subheader("Compare Property Value with Forecast on Selected Date")
 
+    # Input: Property Address
     address = st.text_input("Enter Property Address", "8018 Christmas Ct, Charlotte, NC 28316")
+
+    # Date Input Setup
     forecast_min = forecast['ds'].min()
     forecast_max = forecast['ds'].max()
     date_input = st.date_input("Select Forecast Date", forecast_max, min_value=forecast_min, max_value=forecast_max)
 
-    forecast_start_val = pd.DataFrame()
+    forecast_start_val = pd.DataFrame()  # Placeholder to use in other tabs if needed
 
     if address and date_input:
         value_data = fetch_property_value(address)
 
         if value_data:
+            # Get RentCast price
             rentcast_price = value_data.get("price")
             st.metric("RentCast Estimated Value", f"${rentcast_price:,.0f}")
 
+            # Get forecasted value closest to selected date
             selected_date = pd.to_datetime(date_input)
             closest_row = forecast.iloc[(forecast['ds'] - selected_date).abs().argsort()[:1]]
             model_price = closest_row['yhat'].values[0]
             model_date = closest_row['ds'].values[0]
-
-            forecast_start_val = closest_row.copy()  # Store for use in Tab 3
+            forecast_start_val = closest_row.copy()
 
             st.metric("Forecasted Value on Selected Date", f"${model_price:,.0f}")
+
+            # Calculate % difference
             diff_pct = 100 * (rentcast_price - model_price) / model_price
-
             if diff_pct > 0:
-                st.write(f"The property appears overvalued by {diff_pct:.2f}% compared to the model.")
+                st.write(f"The property appears **overvalued** by {diff_pct:.2f}% compared to the forecast.")
             else:
-                st.write(f"The property appears undervalued by {abs(diff_pct):.2f}% compared to the model.")
+                st.write(f"The property appears **undervalued** by {abs(diff_pct):.2f}% compared to the forecast.")
 
+            # Filter forecast starting from selected date
             filtered_forecast = forecast[forecast['ds'] >= selected_date]
 
+            # Plotting: Forecast, today's price, and projected path
             fig2, ax2 = plt.subplots(figsize=(10, 4))
-            ax2.plot(filtered_forecast['ds'], filtered_forecast['yhat'], label="Forecast")
-            ax2.fill_between(filtered_forecast['ds'], filtered_forecast['yhat_lower'], filtered_forecast['yhat_upper'], color='blue', alpha=0.2)
-            ax2.axhline(y=rentcast_price, color='r', linestyle='--', label="RentCast Value")
+            ax2.plot(filtered_forecast['ds'], filtered_forecast['yhat'], label="Forecast", color='blue')
+            ax2.fill_between(filtered_forecast['ds'], filtered_forecast['yhat_lower'], filtered_forecast['yhat_upper'], 
+                             color='blue', alpha=0.2, label="Confidence Interval")
+
+            # Today's price (from RentCast)
+            today = pd.to_datetime("today").normalize()
+            ax2.scatter(today, rentcast_price, color='red', label="Today's RentCast Value", zorder=5)
+
+            # Dashed line from today to forecast date
+            ax2.plot([today, selected_date], [rentcast_price, model_price], 
+                     color='green', linestyle='--', label="Projected Path")
+
+            # Horizontal RentCast line
+            ax2.axhline(y=rentcast_price, color='r', linestyle='--', alpha=0.5)
+
+            # Plot formatting
             ax2.set_xlabel("Date")
             ax2.set_ylabel("Price ($)")
             ax2.set_title("Forecast vs RentCast Value")
             ax2.legend()
+            ax2.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+            fig2.autofmt_xdate()
+
+            # Show plot
             st.pyplot(fig2)
+
+            
 
 # Tab 3 - Mortgage Calculator
 with tab3:
