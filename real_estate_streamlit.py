@@ -34,7 +34,7 @@ st.set_page_config(page_title="Forecast and Value Comparison", layout="wide")
 st.title("Address-Based Home Value Forecast and Analysis")
 
 # Create Tabs
-tab1, tab2, tab3 = st.tabs(["Forecast Explorer", "Property Insights", "Mortgage Calculator"])
+tab1, tab2, tab3, tab4 = st.tabs(["Forecast Explorer", "Property Insights", "Mortgage Calculator", "The So What"])
 
 # Tab 1 - Forecast Explorer
 conflict_periods = {
@@ -213,3 +213,15 @@ with tab3:
 st.markdown("---")
 csv = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].to_csv(index=False)
 st.download_button(label="Download Full Forecast CSV", data=csv, file_name='forecast.csv', mime='text/csv')
+
+# ========================= The So What Tab ====================================
+
+with tab4:
+    st.header("This Model and Psychological Operations")
+
+    st.markdown( """ PSYOP depends on understanding and pivoting our actions to create change in an envionment,
+                utilizing currently tracked data from vendors to establish trend patterns on public sentiment can be modeled against current effotrs. 
+                Understnading the impacts of our past actions can dictate our future ones to creat the effects we need.""")
+    
+
+    st.markdown(""" Questions ? """)
